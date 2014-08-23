@@ -17,27 +17,27 @@ $url = isset($_GET['url'])?$_GET['url']:false;
 if($url){
 	$url = urldecode($url);
 
+	$hidden = isset($_GET['hidden'])?false:true;
+
 	$details = $flipkart->call_url($url);
 	$details = json_decode($details, TRUE);
-
 
 	$nextUrl = $details['nextUrl'];
 	$validTill = $details['validTill'];
 	$products = $details['productInfoList'];
 
 	echo '<h2><a href="?">HOME</a> | <a href="?url='.urlencode($nextUrl).'">NEXT >></a></h2>';
+
+	if($hidden)
+		echo 'Products that are out of stock are hidden by default.<br><a href="?hidden=1&url='.urlencode($url).'">SHOW OUT-OF-STOCK ITEMS</a><br><br>';
+
 	echo "<table border=2 cellpadding=10 cellspacing=1 style='text-align:center'>";
 	$count = 0;
 
 	$end = 1;
 	foreach ($products as $product) {
-		// echo '<pre>';
-		// print_r($product);
-		// echo "</pre>";
-		// continue;
-
 		$inStock = $product['productBaseInfo']['productAttributes']['inStock'];
-		if(!$inStock)
+		if(!$inStock && $hidden)
 			continue;
 		
 		$count++;
@@ -73,7 +73,7 @@ if($url){
 	}
 
 	if($count==0){
-		echo '<tr><td>The 50 retrieved products are not in stock. Try the Next button or another category</td><tr>';
+		echo '<tr><td>The retrieved products are not in stock. Try the Next button or another category.</td><tr>';
 	}
 
 	if($end!=1)
@@ -84,7 +84,6 @@ if($url){
 
 	return;
 }
-
 
 //If no URL given
 //Get home page
@@ -99,8 +98,6 @@ $list = $home['apiGroups']['affiliate']['apiListings'];
 
 
 echo '<h1>API Homepage</h1>Click on a category link to show available products from that category.<br><br>';
-
-
 
 echo '<table border=2 style="text-align:center;">';
 $count = 0;
