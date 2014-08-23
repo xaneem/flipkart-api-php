@@ -15,7 +15,7 @@ $flipkart = new \clusterdev\Flipkart("<affiliate-id>", "<access-token>", "json")
 $url = isset($_GET['url'])?$_GET['url']:false;
 
 if($url){
-	$url = urldecode($url);
+	$url = base64_decode($url);
 
 	$hidden = isset($_GET['hidden'])?false:true;
 
@@ -26,10 +26,10 @@ if($url){
 	$validTill = $details['validTill'];
 	$products = $details['productInfoList'];
 
-	echo '<h2><a href="?">HOME</a> | <a href="?url='.urlencode($nextUrl).'">NEXT >></a></h2>';
+	echo '<h2><a href="?">HOME</a> | <a href="?url='.base64_encode($nextUrl).'">NEXT >></a></h2>';
 
 	if($hidden)
-		echo 'Products that are out of stock are hidden by default.<br><a href="?hidden=1&url='.urlencode($url).'">SHOW OUT-OF-STOCK ITEMS</a><br><br>';
+		echo 'Products that are out of stock are hidden by default.<br><a href="?hidden=1&url='.base64_encode($url).'">SHOW OUT-OF-STOCK ITEMS</a><br><br>';
 
 	echo "<table border=2 cellpadding=10 cellspacing=1 style='text-align:center'>";
 	$count = 0;
@@ -80,7 +80,7 @@ if($url){
 		echo '</td></tr>';
 
 	echo '</table>';
-	echo '<h2><a href="?url='.urlencode($nextUrl).'">NEXT >></a></h2>';
+	echo '<h2><a href="?url='.base64_encode($nextUrl).'">NEXT >></a></h2>';
 
 	return;
 }
@@ -98,6 +98,8 @@ $list = $home['apiGroups']['affiliate']['apiListings'];
 
 
 echo '<h1>API Homepage</h1>Click on a category link to show available products from that category.<br><br>';
+
+
 
 echo '<table border=2 style="text-align:center;">';
 $count = 0;
@@ -117,7 +119,7 @@ foreach ($list as $key => $data) {
 
 	echo "<strong>".$key."</strong>";
 	echo "<br>";
-	echo '<a href="?url='.urlencode($data['availableVariants']['v0.1.0']['get']).'">View Products &raquo;</a>';
+	echo '<a href="?url='.base64_encode($data['availableVariants']['v0.1.0']['get']).'">View Products &raquo;</a>';
 }
 
 if($end!=1)
