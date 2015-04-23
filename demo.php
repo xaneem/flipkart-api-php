@@ -9,6 +9,9 @@
  * @author Saneem (@xaneem, xaneem@gmail.com)
  */
 
+//This is basic example code, and is not intended to be used in production.
+
+
 //Don't forget to use a valid Affiliate Id and Access Token.
 
 //Include the class.
@@ -16,6 +19,12 @@ include "clusterdev.flipkart-api.php";
 
 //Replace <affiliate-id> and <access-token> with the correct values
 $flipkart = new \clusterdev\Flipkart("<affiliate-id>", "<access-token>", "json");
+
+
+$dotd_url = 'https://affiliate-api.flipkart.net/affiliate/offers/v1/dotd/json';
+$topoffers_url = 'https://affiliate-api.flipkart.net/affiliate/offers/v1/top/json';
+
+
 
 //To view category pages, API URL is passed as query string.
 $url = isset($_GET['url'])?$_GET['url']:false;
@@ -117,6 +126,153 @@ if($url){
 	exit();
 }
 
+
+//Deal of the Day DOTD and Tops offers
+$offer = isset($_GET['offer'])?$_GET['offer']:false;
+if($offer){
+
+	if($offer == 'dotd'){
+		//Call the API using the URL.
+		$details = $flipkart->call_url($dotd_url);
+
+		if(!$details){
+			echo 'Error: Could not retrieve DOTD.';
+			exit();
+		}
+
+		//The response is expected to be JSON. Decode it into associative arrays.
+		$details = json_decode($details, TRUE);
+
+		$list = $details['dotdList'];
+
+		//The navigation buttons.
+		echo '<h2><a href="?">HOME</a> | DOTD Offers | <a href="?offer=topoffers">Top Offers</a></h2>';
+
+		//Show table
+		echo "<table border=2 cellpadding=10 cellspacing=1 style='text-align:center'>";
+		$count = 0;
+		$end = 1;
+
+		//Make sure there are products in the list.
+		if(count($list) > 0){
+			foreach ($list as $item) {
+				//Keep count.
+				$count++;
+
+				//The API returns these values
+				$title = $item['title'];
+				$description = $item['description'];
+				$url = $item['url'];
+				$imageUrl = $item['imageUrls'][0]['url'];
+				$availability = $item['availability'];
+
+				//Setting up the table rows/columns for a 3x3 view.
+				$end = 0;
+				if($count%3==1)
+					echo '<tr><td>';
+				else if($count%3==2)
+					echo '</td><td>';
+				else{
+					echo '</td><td>';
+					$end =1;
+				}
+
+				echo '<a target="_blank" href="'.$url.'"><img src="'.$imageUrl.'" style="max-width:200px; max-height:200px;"/><br>'.$title."</a><br>".$description;
+
+				if($end)
+					echo '</td></tr>';
+
+			}
+		}
+		//A message if no products are printed.	
+		if($count==0){
+			echo '<tr><td>No DOTDs returned.</td><tr>';
+		}
+
+		//A hack to make sure the tags are closed.	
+		if($end!=1)
+			echo '</td></tr>';
+
+		echo '</table>';
+
+		//That's all we need for the category view.
+		exit();
+	}else if($offer == 'topoffers'){
+
+		//Call the API using the URL.
+		$details = $flipkart->call_url($topoffers_url);
+
+		if(!$details){
+			echo 'Error: Could not retrieve Top Offers.';
+			exit();
+		}
+
+		//The response is expected to be JSON. Decode it into associative arrays.
+		$details = json_decode($details, TRUE);
+
+		$list = $details['topOffersList'];
+
+		//The navigation buttons.
+		echo '<h2><a href="?">HOME</a> | <a href="?offer=dotd">DOTD Offers</a> | Top Offers</h2>';
+
+		//Show table
+		echo "<table border=2 cellpadding=10 cellspacing=1 style='text-align:center'>";
+		$count = 0;
+		$end = 1;
+
+		//Make sure there are products in the list.
+		if(count($list) > 0){
+			foreach ($list as $item) {
+				//Keep count.
+				$count++;
+
+				//The API returns these values
+				$title = $item['title'];
+				$description = $item['description'];
+				$url = $item['url'];
+				$imageUrl = $item['imageUrls'][0]['url'];
+				$availability = $item['availability'];
+
+				//Setting up the table rows/columns for a 3x3 view.
+				$end = 0;
+				if($count%3==1)
+					echo '<tr><td>';
+				else if($count%3==2)
+					echo '</td><td>';
+				else{
+					echo '</td><td>';
+					$end =1;
+				}
+
+				echo '<a target="_blank" href="'.$url.'"><img src="'.$imageUrl.'" style="max-width:200px; max-height:200px;"/><br>'.$title."</a><br>".$description;
+
+				if($end)
+					echo '</td></tr>';
+
+			}
+		}
+		//A message if no products are printed.	
+		if($count==0){
+			echo '<tr><td>No Top Offers returned.</td><tr>';
+		}
+
+		//A hack to make sure the tags are closed.	
+		if($end!=1)
+			echo '</td></tr>';
+
+		echo '</table>';
+
+		//That's all we need for the category view.
+		exit();
+
+	}else{
+		echo 'Error: Invalid offer type.';
+		exit();
+	}
+
+}
+
+
 //If the control reaches here, the API directory view is shown.
 
 //Query the API
@@ -133,7 +289,7 @@ $home = json_decode($home, TRUE);
 
 $list = $home['apiGroups']['affiliate']['apiListings'];
 
-echo '<h1>API Homepage</h1>Click on a category link to show available products from that category.<br><br>';
+echo '<h1>API Homepage</h1><h2><a href="?offer=dotd">DOTD Offers</a> | <a href="?offer=topoffers">Top Offers</a></h2>Click on a category link to show available products from that category.<br><br>';
 
 //Create the tabulated view for different categories.
 echo '<table border=2 style="text-align:center;">';
