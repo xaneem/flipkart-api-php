@@ -16,10 +16,10 @@ Note that it is recommended to save the useful data retrieved from the API to a 
 
 Feel free to use it, fork it, and send pull requests for any improvements!
 
-###Alternative
-If you're trying to scrape the site instead of using the API, there's something else that I'm working on which you should take a look at: [Flipbot](https://github.com/xaneem/flipbot)
+### Alternative
+If you're trying to scrape the site instead of using the API, there's something else that I'm working on, which you should take a look at: [Flipbot](https://github.com/xaneem/flipbot)
 
-It is a simple tool that built in JavaScript that opens pages in a headless browser and reads the data. Note that it is still in development and might not fit your purpose.
+It is a simple tool that is built in JavaScript. It opens pages in a headless browser and reads the data. Note that it is still in development and might not fit your purpose.
 
-###License
+### License
 MIT License
